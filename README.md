@@ -5,7 +5,7 @@
 * getChannels loads getPrograms on 200
 * Cleanup comments
 * Remove dead code
-* Split getPrograms and outputting into seperate code
+* Split getPrograms and outputting into seperate functions
 
 
 https://kimroege.github.io/gvd-tv-oversigt/gvd.htm
