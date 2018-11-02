@@ -4,12 +4,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <!--<script src="https://jsconsole.com/js/remote.js?1d18d023-5523-44af-b47b-d74b615ce008"></script>-->
 <script>
-// SETTINGS
-
-// API for list of channels
-var today='';
-getToday();
-
+// DOCUMENTATION:
 //http://tvtid-app-backend.tv2.dk/api/tvtid/v1/channels
 //http://tvtid-app-backend.tv2.dk/api/tvtid/v1/dayviews/2017-07-28/?ch=8&ch=77&ch=7&ch=6&ch=5&ch=4&ch=31&ch=3&ch=2&ch=156&ch=133&ch=11830&ch=11608&ch=11077&ch=10342&ch=10154&ch=10153&ch=10093&ch=10066&ch=1
 //http://tvtid-app-backend.tv2.dk/api/tvtid/v1/dayviews/2017-07-28/?ch=1&ch=11610&ch=5&ch=7&ch=2&ch=31&ch=10154&ch=10155&ch=10153&ch=10089&ch=15&ch=12008&ch=10527&ch=135&ch=136
@@ -18,51 +13,67 @@ getToday();
 //var urlchannels = 'http://tvtid-app-backend.tv2.dk/api/tvtid/v1/dayviews/'+today+'/?ch=1&ch=3&ch=5&ch=10093&ch=7&ch=2&ch=10155&ch=15&ch=10089&ch=10153&ch=10154&ch=31&ch=11610&ch=10333&ch=10527&ch=12008&ch=10341';
 //var urlchannels = 'https://tvtid-backend.tv2.dk/tvtid-app-backend/epg/dayviews/'+today+'/?ch=1&ch=3&ch=5&ch=10093&ch=7&ch=2&ch=10155&ch=15&ch=10089&ch=10153&ch=10154&ch=31&ch=11610&ch=10333&ch=10527&ch=12008&ch=10341';
 //var urlchannels = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/epg/dayviews/2018-10-08?ch=1&ch=2&ch=3&ch=4&ch=5&ch=6&ch=7&ch=8&ch=14&ch=15&ch=31&ch=37&ch=70&ch=71&ch=77&ch=93&ch=94&ch=118&ch=133&ch=145&ch=153&ch=156&ch=157&ch=185&ch=219&ch=248&ch=10066&ch=10089&ch=10093&ch=10111&ch=10153&ch=10154&ch=10155&ch=12566&ch=12948&ch=15049';
+//var urlchannels = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/epg/dayviews/'+today+'/?ch=1&ch=3&ch=5&ch=10093&ch=7&ch=2&ch=10155&ch=15&ch=10089&ch=10153&ch=10154&ch=31&ch=11610&ch=10333&ch=10527&ch=12008&ch=10341';
 
+
+// SETUP
+// Clear channels
 var ch ='';
+
+// Set todays date unless before 06:00, then choose yesterday. See getToday function
+var today='';
+getToday();
+
+// Fetch the following channels in this order
 var channels = [1,3,5,10093,7,2,10155,15,10089,10153,10154,31,11610,10333,10527,12008,10341]
+
+// Prepare the list of channels as a get parameter
 for (i = 0; i < channels.length; i++) { 
     ch += 'ch='+channels[i]+'&';
 }
-
 ch = ch.slice(0, -1);
 
-
+// List all channels
 var url = 'https://tvtid-backend.tv2.dk/tvtid-app-backend/schedules/channels';
-
-//var urlchannels = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/epg/dayviews/'+today+'/?ch=1&ch=3&ch=5&ch=10093&ch=7&ch=2&ch=10155&ch=15&ch=10089&ch=10153&ch=10154&ch=31&ch=11610&ch=10333&ch=10527&ch=12008&ch=10341';
-
+// Get the program for selected channels
 var urlchannels = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/epg/dayviews/'+today+'/?'+ch;
-
-
+// Program descriptions
 var urlprogramid = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/schedules/channels/3/programs/'
 
-
+// Timestamp to see if a program is started
 var now = Date.now()/1000;
+
+// Unused?
 var currentId ='';
 var channelsArray;
 
 // Logo base url http://epg-images.tv2.dk/channellogos/logo/31.png
 var urllogo = 'http://epg-images.tv2.dk/channellogos/logo/'; 
 
+// The HTML code itself
 var output='';
 
+function startNow() {
+  getChannels();
+  //getChannels2();
+  getToday();
+  //getPrograms();
+  //console.log(now);
+}
 
+// Get the description of a program as an alert
 function alertDescription(programId) {
 	var urlpid = urlprogramid + programId;
 	console.log(urlpid);
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-       // Typical action to be performed when the document is ready:
-       //console.log(xhttp.responseText);
        var programResult = JSON.parse(xhttp.responseText);
        alert(programResult['program']['title']+'\n------------------------\n'+programResult['program']['desc']);
     }
 };
 xhttp.open("GET", urlpid, true);
 xhttp.send();
-
 }
 
 
@@ -92,36 +103,30 @@ function getToday(){
   //console.log(today);
 }
 
-function startNow() {
-  getChannels();
-  //getChannels2();
-  getToday();
-  //getPrograms();
-  //console.log(now);
-}
-
+// Highlight Movies
 function findFilm(arr) {
 	var found = arr.includes('Film');
 	return found;
 }
 
+// HTML5 progressbar for current programs
 function progressBar(start, stop) {
   var progressval = now - start;
   var progressmax = stop - start;
   return '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<progress value="' + progressval + '" max="' + progressmax + '"></progress>';
 }
 
+// Check if a program is curretly on air. Concider removing the id part
 function currentProgram(start, stop,id) {
-  if (now > start && now < stop) 
-  {
-    if(id){
-	//console.log('id:' +id);
-    currentId =id;
-    }
-    return true;
-  } else {
-    return false;
-  }
+	if (now > start && now < stop) {
+	    if (id) {
+	        //console.log('id:' +id);
+	        currentId = id;
+	    }
+	    return true;
+	} else {
+	    return false;
+	}
 }
 
 
@@ -222,6 +227,7 @@ function getChannels() {
    });
 }
 
+// Return imageurl from a channel id
 function getIconFromId(id) {
   for (var i = 0; i < channelsArray.channels.length; i++) {
       if (channelsArray.channels[i].id == id)
@@ -232,6 +238,7 @@ function getIconFromId(id) {
    }
 }
 
+// Return channel name from a channel id
 function getNameFromId(id) {
   for (var i = 0; i < channelsArray.channels.length; i++) {
       if (channelsArray.channels[i].id == id)
