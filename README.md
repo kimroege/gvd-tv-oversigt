@@ -6,3 +6,6 @@
 * Cleanup comments
 * Remove dead code
 * Split getPrograms and outputting into seperate code
+
+
+https://kimroege.github.io/gvd-tv-oversigt/gvd.htm
