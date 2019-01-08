@@ -7,7 +7,5 @@
 * Remove dead code
 * Split getPrograms and outputting into seperate functions
 
-[go](https://kimroege.github.io/gvd-tv-oversigt/gvd.htm){:target="_blank"}.
-
-<a href="https://kimroege.github.io/gvd-tv-oversigt/gvd.htm" target="_blank">example</a>
+https://kimroege.github.io/gvd-tv-oversigt/gvd.htm
 
