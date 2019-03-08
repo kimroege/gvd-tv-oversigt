@@ -8,6 +8,30 @@
 	body {
 		font-family: Verdana, Geneva, sans-serif;	
 	}
+		a:link {
+		text-decoration: none;
+		color: black;
+		font-family: Verdana, Geneva, sans-serif;
+	}
+
+	a:visited {
+		text-decoration: none;
+		color: black;
+		font-family: Verdana, Geneva, sans-serif;
+	}
+
+	a:hover {
+	  	text-decoration: underline;	7
+	  	color: black;	
+		font-family: Verdana, Geneva, sans-serif;
+	}
+
+	a:active {
+	  	text-decoration: underline;
+	 	color: black;
+		font-family: Verdana, Geneva, sans-serif;
+	}
+
 </style>
 
 <script>
@@ -122,13 +146,12 @@ function outputChannelProgram(title, id, start, stop, categories) {
 		output2 += '&nbsp;&nbsp;&nbsp;';
 		if (findFilm(categories)) 
 		{
-			output2 += '<span style="background-color:lightblue">' + title + '</span>';
+			output2 += '<a href="#" onClick=\'alertDescription(\"'+ id +'\");return false;\'><span style="background-color:lightblue">' + title + '</span></a>';
 		}
 		else 
 		{
-			output2 += title;
+			output2 += '<a href="#" onClick=\'alertDescription(\"'+ id +'\");return false;\'>' + title + '</a>';
 		}
-		output2 += ' <a href="#" onClick=\'alertDescription(\"'+ id +'\");return false;\'>Beskrivelse</a>'
 		if (currentProgram(start, stop)) 
 		{ 
 			output2+='<br>'+progressBar(start, stop);
