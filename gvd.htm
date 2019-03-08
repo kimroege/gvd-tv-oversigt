@@ -3,6 +3,13 @@
 <title>GVD Lille pakke liste</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <!--<script src="https://jsconsole.com/js/remote.js?1d18d023-5523-44af-b47b-d74b615ce008"></script>-->
+
+<style type="text/css">
+	body {
+		font-family: Verdana, Geneva, sans-serif;	
+	}
+</style>
+
 <script>
 // DOCUMENTATION:
 //http://tvtid-app-backend.tv2.dk/api/tvtid/v1/channels
@@ -39,27 +46,22 @@ var url = 'https://tvtid-backend.tv2.dk/tvtid-app-backend/schedules/channels';
 var urlchannels = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/epg/dayviews/'+today+'/?'+ch;
 // Program descriptions
 var urlprogramid = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/schedules/channels/3/programs/'
+// Logo base url http://epg-images.tv2.dk/channellogos/logo/31.png
+var urllogo = 'http://epg-images.tv2.dk/channellogos/logo/'; 
 
 // Timestamp to see if a program is started
 var now = Date.now()/1000;
 
 // Unused?
 var currentId ='';
-var channelsArray;
-
-// Logo base url http://epg-images.tv2.dk/channellogos/logo/31.png
-var urllogo = 'http://epg-images.tv2.dk/channellogos/logo/'; 
 
 // The HTML code itself
 var output='';
 var output2='';
+var channelsArray;
 
 function startNow() {
-  getChannels();
-  //getChannels2();
-  getToday();
-  //getPrograms();
-  //console.log(now);
+  getChannelsXHR();
 }
 
 // Get the description of a program as an alert
@@ -101,7 +103,6 @@ function getToday(){
   var month = '0' + (d.getMonth()+1);
   var date = '0' + d.getDate();
   today = year + '-' + (month).substr(-2) + '-' + date.substr(-2);
-  //console.log(today);
 }
 
 // Highlight Movies
@@ -120,105 +121,39 @@ function progressBar(start, stop) {
 // Check if a program is curretly on air. Concider removing the id part
 function currentProgram(start, stop,id) {
 	if (now > start && now < stop) {
-	    if (id) {
-	        //console.log('id:' +id);
-	        currentId = id;
-	    }
 	    return true;
 	} else {
 	    return false;
 	}
 }
 
+function getProgramsXHR() {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+	     	var data = JSON.parse(xhttp.responseText);
+	     	var s = data;
+			var order = {};
+			channels.forEach(function (a, i) { order[a] = i; });
 
-function getPrograms() {
-  $.getJSON(urlchannels, function(data) {
-
-
-  	var s = data;
-	//var channels = [1,2,3,5,7,15,31,10089,10093,10153,10154,10155,10341,11610]
-	var order = {};
-	channels.forEach(function (a, i) { order[a] = i; });
-
-	s.sort(function (a, b) {
-	    return order[a.id] - order[b.id];
-	});
-
-	console.log(s);
-      
-    for (var i = 0; i < data.length; i++) {
-      //output += 'ID: ';
-      //output += data[i].id;
-	  //output += 'Kanal: ' + getNameFromId(data[i].id);
-	  output += '<img src="'+getIconFromId(data[i].id)+'">';
-	  //console.log(data[i]);
-	  //output += '<b>' + getNameFromId(data[i].id) + '</b>';
-	  //output += 'Kanal: ' + data[i].id;
-	  //console.log(data[i].id);
-      output += '<br>';
-      outputChannelLogo(data[i].id);
-      for (var i2 = 0; i2 < data[i].programs.length; i2++) {
-        cPstart = data[i].programs[i2].start;
-        cPstop = data[i].programs[i2].stop;
-        //cPid =i2;
-		//console.log(data[i].programs[i2].id);
-		outputChannelProgram(data[i].programs[i2].title, data[i].programs[i2].id, data[i].programs[i2].start, data[i].programs[i2].stop, data[i].programs[i2].categories);
-        if (cPstop>now) {
-			/*
-			if (currentProgram(cPstart, cPstop,cPid)) {          output += '<b>';        }
-			output += '&nbsp;&nbsp;&nbsp;';
-			output += data[i].programs[i2].title;
-			output+='<br>';
-			output += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start: ';
-			output += convertTime(cPstart);
-			output += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stop: ';
-			output += convertTime(cPstop);
-			if (currentProgram(cPstart, cPstop)) { output+='<br>'+progressBar(cPstart, cPstop);}
-			if (currentProgram(cPstart, cPstop)) {          output += '</b>';        }
-			output += '<br>';
-			*/
-			output += '<span>&nbsp;&nbsp;&nbsp;';
-			
-			output += convertTime(cPstart);
-			output += '&nbsp;&nbsp;&nbsp;';
-			if (findFilm(data[i].programs[i2].categories)) {
-				output += '<span style="background-color:lightblue">' + data[i].programs[i2].title + '</span>';
-			}
-			else {
-				output += data[i].programs[i2].title;
-			}
-			
-			output += ' <a href="#" onClick=\'alertDescription(\"'+ data[i].programs[i2].id +'\");return false;\'>Beskrivelse</a>'
-			
-			if (currentProgram(cPstart, cPstop)) { output+='<br>'+progressBar(cPstart, cPstop);}
-			output += '</span><br>';
-		}
-		else {
-		}
-      }
-	  output += '<br>';
-      document.getElementById("programList").innerHTML = output2;
-    }
-  });
+			s.sort(function (a, b) {
+			    return order[a.id] - order[b.id];
+			});
+    		for (var i = 0; i < data.length; i++) {
+       			outputChannelLogo(data[i].id);
+   				for (var i2 = 0; i2 < data[i].programs.length; i2++) {
+   					outputChannelProgram(data[i].programs[i2].title, data[i].programs[i2].id, data[i].programs[i2].start, data[i].programs[i2].stop, data[i].programs[i2].categories);
+       			}
+	  			output2 += '<br>';
+      			document.getElementById("programList").innerHTML = output2;
+   			}
+	    }
+	};
+	xhttp.open("GET", urlchannels, true);
+	xhttp.send();
 }
 
-function getChannels2() {
-  $.getJSON(url, function(data) {
-  //var output2 = '\n\r';
-  var output2 = '';
-    //  console.log(data);
-    for (var i = 0; i < data.length; i++) {
-      output2 += 'ID: ';
-      output2 += data[i].id;
-      output2 += ' Title: ';
-      output2 += data[i].title;
-      output2 += '\n\r';
-      //document.getElementById("channelList").innerHTML = output2;
-      //console.log(output2);
-    }
-	//console.log(output2);
-  });
-}
+
 
 function outputChannelLogo(id) {
 	 output2 += '<img src="'+getIconFromId(id)+'"><br>';
@@ -246,18 +181,18 @@ function outputChannelProgram(title, id, start, stop, categories) {
 		}
 		else {
 		}
-		output2 +='<br>';
 }
 
-
-function getChannels() {
-
-  $.getJSON(url, function(data) {
-    //  console.log(data);
-	channelsArray = data;
-	//console.log(channelsArray);
-	getPrograms();
-   });
+function getChannelsXHR() {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+	       channelsArray = JSON.parse(xhttp.responseText);
+	       getProgramsXHR();
+	    }
+	};
+	xhttp.open("GET", url, true);
+	xhttp.send();
 }
 
 // Return imageurl from a channel id
@@ -265,7 +200,6 @@ function getIconFromId(id) {
   for (var i = 0; i < channelsArray.channels.length; i++) {
       if (channelsArray.channels[i].id == id)
 	  {
-		//console.log(channelsArray.channels[i].title);
         return channelsArray.channels[i].icon;
 	  }
    }
@@ -276,11 +210,99 @@ function getNameFromId(id) {
   for (var i = 0; i < channelsArray.channels.length; i++) {
       if (channelsArray.channels[i].id == id)
 	  {
-		//console.log(channelsArray.channels[i].title);
         return channelsArray.channels[i].title;
 	  }
    }
 }
+
+/*
+function getChannels() {
+
+  $.getJSON(url, function(data) {
+    //  console.log(data);
+	channelsArray = data;
+	console.log(channelsArray);
+	//console.log(channelsArray);
+	getPrograms();
+   });
+}
+
+function getChannels2() {
+  $.getJSON(url, function(data) {
+  //var output2 = '\n\r';
+  var output2 = '';
+    //  console.log(data);
+    for (var i = 0; i < data.length; i++) {
+      output2 += 'ID: ';
+      output2 += data[i].id;
+      output2 += ' Title: ';
+      output2 += data[i].title;
+      output2 += '\n\r';
+      //document.getElementById("channelList").innerHTML = output2;
+      //console.log(output2);
+    }
+	//console.log(output2);
+  });
+}
+
+function getPrograms() {
+  $.getJSON(urlchannels, function(data) {
+  	var s = data;
+	//var channels = [1,2,3,5,7,15,31,10089,10093,10153,10154,10155,10341,11610]
+	var order = {};
+	channels.forEach(function (a, i) { order[a] = i; });
+
+	s.sort(function (a, b) {
+	    return order[a.id] - order[b.id];
+	});
+
+	//console.log(s);
+      
+    for (var i = 0; i < data.length; i++) {
+      //output += 'ID: ';
+      //output += data[i].id;
+	  //output += 'Kanal: ' + getNameFromId(data[i].id);
+	  output += '<img src="'+getIconFromId(data[i].id)+'">';
+	  //console.log(data[i]);
+	  //output += '<b>' + getNameFromId(data[i].id) + '</b>';
+	  //output += 'Kanal: ' + data[i].id;
+	  //console.log(data[i].id);
+      output += '<br>';
+      outputChannelLogo(data[i].id);
+      for (var i2 = 0; i2 < data[i].programs.length; i2++) {
+        cPstart = data[i].programs[i2].start;
+        cPstop = data[i].programs[i2].stop;
+        //cPid =i2;
+		//console.log(data[i].programs[i2].id);
+		outputChannelProgram(data[i].programs[i2].title, data[i].programs[i2].id, data[i].programs[i2].start, data[i].programs[i2].stop, data[i].programs[i2].categories);
+        if (cPstop>now) {
+
+			output += '<span>&nbsp;&nbsp;&nbsp;';
+			
+			output += convertTime(cPstart);
+			output += '&nbsp;&nbsp;&nbsp;';
+			if (findFilm(data[i].programs[i2].categories)) {
+				output += '<span style="background-color:lightblue">' + data[i].programs[i2].title + '</span>';
+			}
+			else {
+				output += data[i].programs[i2].title;
+			}
+			
+			output += ' <a href="#" onClick=\'alertDescription(\"'+ data[i].programs[i2].id +'\");return false;\'>Beskrivelse</a>'
+			
+			if (currentProgram(cPstart, cPstop)) { output+='<br>'+progressBar(cPstart, cPstop);}
+			output += '</span><br>';
+		}
+		else {
+		}
+      }
+	  output2 += '<br>';
+      document.getElementById("programList").innerHTML = output2;
+    }
+  });
+}
+
+*/
 
 </script>
 </head>
