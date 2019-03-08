@@ -52,6 +52,7 @@ var urllogo = 'http://epg-images.tv2.dk/channellogos/logo/';
 
 // The HTML code itself
 var output='';
+var output2='';
 
 function startNow() {
   getChannels();
@@ -155,11 +156,13 @@ function getPrograms() {
 	  //output += 'Kanal: ' + data[i].id;
 	  //console.log(data[i].id);
       output += '<br>';
+      outputChannelLogo(data[i].id);
       for (var i2 = 0; i2 < data[i].programs.length; i2++) {
         cPstart = data[i].programs[i2].start;
         cPstop = data[i].programs[i2].stop;
-        cPid =i2;
+        //cPid =i2;
 		//console.log(data[i].programs[i2].id);
+		outputChannelProgram(data[i].programs[i2].title, data[i].programs[i2].id, data[i].programs[i2].start, data[i].programs[i2].stop, data[i].programs[i2].categories);
         if (cPstop>now) {
 			/*
 			if (currentProgram(cPstart, cPstop,cPid)) {          output += '<b>';        }
@@ -216,6 +219,35 @@ function getChannels2() {
 	//console.log(output2);
   });
 }
+
+function outputChannelLogo(id) {
+	 output2 += '<img src="'+getIconFromId(id)+'"><br>';
+}
+
+function outputChannelProgram(title, id, start, stop, categories) {
+	if (stop>now) {
+		output2 += '<span>&nbsp;&nbsp;&nbsp;';
+		output2 += convertTime(start);
+		output2 += '&nbsp;&nbsp;&nbsp;';
+		if (findFilm(categories)) 
+		{
+			output2 += '<span style="background-color:lightblue">' + title + '</span>';
+		}
+		else 
+		{
+			output2 += title;
+		}
+		output2 += ' <a href="#" onClick=\'alertDescription(\"'+ id +'\");return false;\'>Beskrivelse</a>'
+		if (currentProgram(start, stop)) 
+		{ 
+			output2+='<br>'+progressBar(start, stop);
+		}
+			output2 += '</span><br>';
+		}
+		else {
+		}
+}
+
 
 function getChannels() {
 
