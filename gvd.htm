@@ -64,38 +64,6 @@ function startNow() {
   getChannelsXHR();
 }
 
-// Get the description of a program as an alert
-function alertDescription(programId) {
-	var urlpid = urlprogramid + programId;
-	console.log(urlpid);
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-       var programResult = JSON.parse(xhttp.responseText);
-       alert(programResult['program']['title']+'\n------------------------\n'+programResult['program']['desc']);
-    }
-};
-xhttp.open("GET", urlpid, true);
-xhttp.send();
-}
-
-
-function convertTime(unix_timestamp) {
-	// Create a new JavaScript Date object based on the timestamp
-	// multiplied by 1000 so that the argument is in milliseconds, not seconds.
-	var date = new Date(unix_timestamp*1000);
-	// Hours part from the timestamp
-	var hours = "0" + date.getHours();
-	// Minutes part from the timestamp
-	var minutes = "0" + date.getMinutes();
-	// Seconds part from the timestamp
-	var seconds = "0" + date.getSeconds();
-	// Will display time in 10:30:23 format
-	//var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-	var formattedTime = hours.substr(-2) + ':' + minutes.substr(-2);
-	return formattedTime;
-}
-
 function getToday(){
   d = new Date();
   if (d.getHours() < 6) {d.setDate(d.getDate()-1); } 
@@ -105,26 +73,16 @@ function getToday(){
   today = year + '-' + (month).substr(-2) + '-' + date.substr(-2);
 }
 
-// Highlight Movies
-function findFilm(arr) {
-	var found = arr.includes('Film');
-	return found;
-}
-
-// HTML5 progressbar for current programs
-function progressBar(start, stop) {
-  var progressval = now - start;
-  var progressmax = stop - start;
-  return '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<progress value="' + progressval + '" max="' + progressmax + '"></progress>';
-}
-
-// Check if a program is curretly on air. Concider removing the id part
-function currentProgram(start, stop,id) {
-	if (now > start && now < stop) {
-	    return true;
-	} else {
-	    return false;
-	}
+function getChannelsXHR() {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+	       channelsArray = JSON.parse(xhttp.responseText);
+	       getProgramsXHR();
+	    }
+	};
+	xhttp.open("GET", url, true);
+	xhttp.send();
 }
 
 function getProgramsXHR() {
@@ -152,8 +110,6 @@ function getProgramsXHR() {
 	xhttp.open("GET", urlchannels, true);
 	xhttp.send();
 }
-
-
 
 function outputChannelLogo(id) {
 	 output2 += '<img src="'+getIconFromId(id)+'"><br>';
@@ -183,17 +139,60 @@ function outputChannelProgram(title, id, start, stop, categories) {
 		}
 }
 
-function getChannelsXHR() {
+
+// Get the description of a program as an alert
+function alertDescription(programId) {
+	var urlpid = urlprogramid + programId;
+	console.log(urlpid);
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
-	    if (this.readyState == 4 && this.status == 200) {
-	       channelsArray = JSON.parse(xhttp.responseText);
-	       getProgramsXHR();
-	    }
-	};
-	xhttp.open("GET", url, true);
-	xhttp.send();
+    if (this.readyState == 4 && this.status == 200) {
+       var programResult = JSON.parse(xhttp.responseText);
+       alert(programResult['program']['title']+'\n------------------------\n'+programResult['program']['desc']);
+    }
+};
+xhttp.open("GET", urlpid, true);
+xhttp.send();
 }
+
+function convertTime(unix_timestamp) {
+	// Create a new JavaScript Date object based on the timestamp
+	// multiplied by 1000 so that the argument is in milliseconds, not seconds.
+	var date = new Date(unix_timestamp*1000);
+	// Hours part from the timestamp
+	var hours = "0" + date.getHours();
+	// Minutes part from the timestamp
+	var minutes = "0" + date.getMinutes();
+	// Seconds part from the timestamp
+	var seconds = "0" + date.getSeconds();
+	// Will display time in 10:30:23 format
+	//var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+	var formattedTime = hours.substr(-2) + ':' + minutes.substr(-2);
+	return formattedTime;
+}
+
+
+// Highlight Movies
+function findFilm(arr) {
+	var found = arr.includes('Film');
+	return found;
+}
+
+// HTML5 progressbar for current programs
+function progressBar(start, stop) {
+  var progressval = now - start;
+  var progressmax = stop - start;
+  return '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<progress value="' + progressval + '" max="' + progressmax + '"></progress>';
+}
+
+// Check if a program is curretly on air. Concider removing the id part
+function currentProgram(start, stop,id) {
+	if (now > start && now < stop) {
+	    return true;
+	} else {
+	    return false;
+	}
+} 
 
 // Return imageurl from a channel id
 function getIconFromId(id) {
