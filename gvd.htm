@@ -39,6 +39,7 @@
 //http://tvtid-app-backend.tv2.dk/api/tvtid/v1/dayviews/2017-07-28/?ch=8&ch=77&ch=7&ch=6&ch=5&ch=4&ch=31&ch=3&ch=2&ch=156&ch=133&ch=11830&ch=11608&ch=11077&ch=10342&ch=10154&ch=10153&ch=10093&ch=10066&ch=1
 //http://tvtid-app-backend.tv2.dk/api/tvtid/v1/dayviews/2017-07-28/?ch=1&ch=11610&ch=5&ch=7&ch=2&ch=31&ch=10154&ch=10155&ch=10153&ch=10089&ch=15&ch=12008&ch=10527&ch=135&ch=136
 //var url = 'http://tvtid-app-backend.tv2.dk/api/tvtid/v1/channels';
+//var url = 'https://tvtid-backend.tv2.dk/tvtid-app-backend/schedules/channels';
 //var urlchannels = 'http://tvtid-app-backend.tv2.dk/api/tvtid/v1/dayviews/'+today+'/?ch=1&ch=8&ch=5&ch=7&ch=2&ch=31&ch=10154&ch=10155&ch=10153&ch=10089&ch=15&ch=12008&ch=10527&ch=135&ch=136';
 //var urlchannels = 'http://tvtid-app-backend.tv2.dk/api/tvtid/v1/dayviews/'+today+'/?ch=1&ch=3&ch=5&ch=10093&ch=7&ch=2&ch=10155&ch=15&ch=10089&ch=10153&ch=10154&ch=31&ch=11610&ch=10333&ch=10527&ch=12008&ch=10341';
 //var urlchannels = 'https://tvtid-backend.tv2.dk/tvtid-app-backend/epg/dayviews/'+today+'/?ch=1&ch=3&ch=5&ch=10093&ch=7&ch=2&ch=10155&ch=15&ch=10089&ch=10153&ch=10154&ch=31&ch=11610&ch=10333&ch=10527&ch=12008&ch=10341';
@@ -64,7 +65,8 @@ for (i = 0; i < channels.length; i++) {
 ch = ch.slice(0, -1);
 
 // List all channels
-var url = 'https://tvtid-backend.tv2.dk/tvtid-app-backend/schedules/channels';
+
+var url = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/schedules/channels';
 // Get the program for selected channels
 var urlchannels = 'https://tvtid-api.api.tv2.dk/api/tvtid/v1/epg/dayviews/'+today+'/?'+ch;
 // Program descriptions
